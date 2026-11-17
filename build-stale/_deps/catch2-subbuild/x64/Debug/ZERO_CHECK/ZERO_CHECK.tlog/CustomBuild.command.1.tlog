@@ -1,0 +1,10 @@
+^C:\USERS\MOCCA200\DOCUMENTS\DEFAULT PROJECT\BUILD\_DEPS\CATCH2-SUBBUILD\CMAKEFILES\67D79D750CE266BA845E2AE30394153A\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/mocca200/Documents/Default Project/build/_deps/catch2-subbuild" "-BC:/Users/mocca200/Documents/Default Project/build/_deps/catch2-subbuild" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/mocca200/Documents/Default Project/build/_deps/catch2-subbuild/catch2-populate.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

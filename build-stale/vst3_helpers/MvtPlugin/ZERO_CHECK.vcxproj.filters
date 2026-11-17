@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\vst3_helpers\MvtPlugin\CMakeFiles\a9773a51c617c8620e262a292d9a09da\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{241B6CB9-C6B2-3B5B-82E0-0087D154F2FA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

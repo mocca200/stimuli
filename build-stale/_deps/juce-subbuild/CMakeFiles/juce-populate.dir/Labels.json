@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/juce-populate"
+		},
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/03061c9e144fb01a185e887adbc6f365/juce-populate.rule"
+		},
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/1fc86a065c8d8be2ff44e4f1600f271c/juce-populate-complete.rule"
+		},
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/73def064c94123b2535264dbc699f56f/juce-populate-build.rule"
+		},
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/73def064c94123b2535264dbc699f56f/juce-populate-configure.rule"
+		},
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/73def064c94123b2535264dbc699f56f/juce-populate-download.rule"
+		},
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/73def064c94123b2535264dbc699f56f/juce-populate-install.rule"
+		},
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/73def064c94123b2535264dbc699f56f/juce-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/73def064c94123b2535264dbc699f56f/juce-populate-patch.rule"
+		},
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/73def064c94123b2535264dbc699f56f/juce-populate-test.rule"
+		},
+		{
+			"file" : "C:/Users/mocca200/Documents/Default Project/build/_deps/juce-subbuild/CMakeFiles/73def064c94123b2535264dbc699f56f/juce-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"juce-populate"
+		],
+		"name" : "juce-populate"
+	}
+}

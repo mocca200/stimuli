@@ -1,0 +1,9 @@
+{
+  "name": "Default Dark",
+  "author": "MVT",
+  "schemaVersion": "1.0.0",
+  "engineVersion": "0.1.0",
+  "preview": "preview.png",
+  "layout": "layout.json",
+  "theme": "theme.json"
+}

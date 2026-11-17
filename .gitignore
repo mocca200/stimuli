@@ -1,0 +1,46 @@
+# Build output
+/build/
+/out/
+/install/
+/.vs/
+/cmake-build-*/
+
+# CMake / IDE
+CMakeUserPresets.json
+*.user
+*.suo
+*.VC.db
+*.VC.opendb
+
+# JUCE / plugin artefacts
+*.vst3
+*.component
+*.aaxplugin
+*.lv2
+*.dll
+*.dylib
+*.so
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.obj
+
+# Generated / local
+/_deps/
+/third_party/
+*.mp4
+*.part
+*.wav
+*.aiff
+*.flac
+*.log
+.DS_Store
+Thumbs.db
+
+# Local export test output
+/export-test/
+
+# Generated previews
+preview.png
+/*.png

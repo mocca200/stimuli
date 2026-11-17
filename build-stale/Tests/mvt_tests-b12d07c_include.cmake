@@ -1,0 +1,5 @@
+if(EXISTS "C:/Users/mocca200/Documents/Default Project/build/Tests/mvt_tests-b12d07c_tests.cmake")
+  include("C:/Users/mocca200/Documents/Default Project/build/Tests/mvt_tests-b12d07c_tests.cmake")
+else()
+  add_test(mvt_tests_NOT_BUILT-b12d07c mvt_tests_NOT_BUILT-b12d07c)
+endif()

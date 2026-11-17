@@ -1,0 +1,55 @@
+{
+  "$schema": "mvt.layout/1",
+  "root": {
+    "id": "root",
+    "type": "container",
+    "style": {
+      "direction": "column",
+      "padding": 20,
+      "gap": 12,
+      "background": "$color.bg"
+    },
+    "children": [
+      {
+        "id": "header",
+        "type": "container",
+        "style": { "direction": "row", "height": 40, "alignItems": "center", "gap": "$space.md" },
+        "children": [
+          { "id": "title", "type": "label", "style": { "flex": 1, "height": 32 }, "text": "MVT Visualization Suite" },
+          { "id": "quality", "type": "label", "style": { "width": 120, "height": 28 }, "text": "Showcase" }
+        ]
+      },
+      {
+        "id": "topRow",
+        "type": "container",
+        "style": { "direction": "row", "flex": 1, "minHeight": 180, "gap": "$space.md" },
+        "children": [
+          { "id": "spectrogram", "type": "spectrogram", "style": { "flex": 2 } },
+          { "id": "chroma", "type": "chromawheel", "style": { "flex": 1 } }
+        ]
+      },
+      {
+        "id": "middleRow",
+        "type": "container",
+        "style": { "direction": "row", "height": 200, "gap": "$space.md" },
+        "children": [
+          { "id": "spectrum", "type": "spectrum", "style": { "flex": 1 } },
+          { "id": "hpss", "type": "hpss", "style": { "flex": 1 } },
+          { "id": "scope", "type": "vectorscope", "style": { "flex": 1 } },
+          { "id": "radial", "type": "radialspectrum", "style": { "flex": 1 } }
+        ]
+      },
+      {
+        "id": "bottomRow",
+        "type": "container",
+        "style": { "direction": "row", "height": 190, "gap": "$space.md" },
+        "children": [
+          { "id": "waveform", "type": "waveform", "style": { "flex": 1 } },
+          { "id": "tonnetz", "type": "tonnetz", "style": { "flex": 1 } },
+          { "id": "similarity", "type": "selfsimilarity", "style": { "flex": 1 } },
+          { "id": "particles", "type": "particles", "style": { "flex": 1 } }
+        ]
+      }
+    ]
+  }
+}

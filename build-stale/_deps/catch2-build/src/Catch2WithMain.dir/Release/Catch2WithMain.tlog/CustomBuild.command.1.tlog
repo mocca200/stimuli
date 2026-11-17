@@ -1,0 +1,10 @@
+^C:\USERS\MOCCA200\DOCUMENTS\DEFAULT PROJECT\BUILD\_DEPS\CATCH2-SRC\SRC\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/mocca200/Documents/Default Project" "-BC:/Users/mocca200/Documents/Default Project/build" --check-stamp-file "C:/Users/mocca200/Documents/Default Project/build/_deps/catch2-build/src/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

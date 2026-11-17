@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\a5c182422c5c7a5ab20fe9875802910f\catch2-populate-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\a5c182422c5c7a5ab20fe9875802910f\catch2-populate-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\a5c182422c5c7a5ab20fe9875802910f\catch2-populate-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\a5c182422c5c7a5ab20fe9875802910f\catch2-populate-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\a5c182422c5c7a5ab20fe9875802910f\catch2-populate-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\a5c182422c5c7a5ab20fe9875802910f\catch2-populate-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\a5c182422c5c7a5ab20fe9875802910f\catch2-populate-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\a5c182422c5c7a5ab20fe9875802910f\catch2-populate-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\1c099912b4d8998eed5cfe34dafbfd82\catch2-populate-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\67d79d750ce266ba845e2ae30394153a\catch2-populate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\mocca200\Documents\Default Project\build\_deps\catch2-subbuild\CMakeFiles\catch2-populate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{EA7F9515-2461-399A-A5DE-A8F1715E315E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

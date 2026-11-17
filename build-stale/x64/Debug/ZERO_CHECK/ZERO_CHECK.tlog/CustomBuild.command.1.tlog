@@ -1,0 +1,10 @@
+^C:\USERS\MOCCA200\DOCUMENTS\DEFAULT PROJECT\BUILD\CMAKEFILES\B201A9A54E88ABB1A75B5033F286FBC5\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/mocca200/Documents/Default Project" "-BC:/Users/mocca200/Documents/Default Project/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/mocca200/Documents/Default Project/build/MvtSuite.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
