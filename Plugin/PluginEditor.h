@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UIEngine/FrameSafetyGate.h"
+#include "UIEngine/Fonts.h"
 #include "UIEngine/RenderEngine.h"
 #include "UIEngine/Skin.h"
 
@@ -17,7 +18,7 @@ class PluginEditor final : public juce::AudioProcessorEditor,
 {
 public:
     explicit PluginEditor (AudioProcessor& processor);
-    ~PluginEditor() override = default;
+    ~PluginEditor() override;
 
     void paint (juce::Graphics& graphics) override;
     void resized() override;
@@ -25,6 +26,7 @@ public:
 private:
     void timerCallback() override;
 
+    ui::NunitoLookAndFeel nunitoLookAndFeel;
     AudioProcessor& processor;
     ui::Skin skin;
     ui::RenderEngine renderEngine;

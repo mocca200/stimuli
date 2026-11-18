@@ -38,5 +38,13 @@ for distribution in some jurisdictions.
 
 ## Fonts
 
-The default theme references Inter and JetBrains Mono by name. Font files are
-not bundled; verify their licences before shipping them.
+The UI uses Nunito exclusively, embedded in the binaries as two static faces:
+
+- Project: https://github.com/googlefonts/nunito
+- Files: `Assets/fonts/NunitoBold.ttf` (weight 700), `Assets/fonts/NunitoBlack.ttf` (weight 900)
+- Licence: SIL Open Font License 1.1, full text in `Assets/fonts/OFL.txt`
+
+The two faces are instanced from the upstream variable font at weights 700 and
+900. Normal copy is set in Nunito Bold and emphasised copy in Nunito Black. The
+OFL permits bundling and redistribution with the licence text; the fonts are not
+sold on their own and their names are not used for modified derivatives.

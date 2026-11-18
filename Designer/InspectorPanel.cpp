@@ -1,6 +1,7 @@
 #include "Designer/InspectorPanel.h"
 
 #include "UIEngine/DesignerDocument.h"
+#include "UIEngine/Fonts.h"
 
 #include <algorithm>
 #include <cmath>
@@ -102,7 +103,7 @@ InspectorPanel::InspectorPanel()
     setOpaque (true);
 
     header_.setText ("Inspector", juce::dontSendNotification);
-    header_.setFont (juce::Font (juce::FontOptions (13.0f, juce::Font::bold)));
+    header_.setFont (fonts::bold (13.0f));
     header_.setColour (juce::Label::textColourId, juce::Colour (0xffd9e2ec));
     addAndMakeVisible (header_);
 
@@ -111,7 +112,7 @@ InspectorPanel::InspectorPanel()
     addAndMakeVisible (viewport_);
 
     tokenCaption_.setText ("token", juce::dontSendNotification);
-    tokenCaption_.setFont (juce::Font (juce::FontOptions (12.0f)));
+    tokenCaption_.setFont (fonts::normal (12.0f));
     tokenCaption_.setColour (juce::Label::textColourId, juce::Colour (0xff8b98a8));
     tokenCaption_.setJustificationType (juce::Justification::centredRight);
     content_.addAndMakeVisible (tokenCaption_);
@@ -124,11 +125,11 @@ InspectorPanel::InspectorPanel()
     };
     content_.addAndMakeVisible (tokenBox_);
 
-    tokenValueLabel_.setFont (juce::Font (juce::FontOptions (11.0f)));
+    tokenValueLabel_.setFont (fonts::normal (11.0f));
     tokenValueLabel_.setColour (juce::Label::textColourId, juce::Colour (0xff7f8b99));
     content_.addAndMakeVisible (tokenValueLabel_);
 
-    tokenHexEditor_.setFont (juce::Font (juce::FontOptions (12.0f)));
+    tokenHexEditor_.setFont (fonts::normal (12.0f));
     tokenHexEditor_.setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff141a24));
     tokenHexEditor_.setColour (juce::TextEditor::textColourId, juce::Colour (0xffe6edf6));
     tokenHexEditor_.setColour (juce::TextEditor::outlineColourId, juce::Colour (0xff283244));
@@ -148,7 +149,7 @@ InspectorPanel::InspectorPanel()
     };
     content_.addAndMakeVisible (clearTokenButton_);
 
-    readout_.setFont (juce::Font (juce::FontOptions (11.0f)));
+    readout_.setFont (fonts::normal (11.0f));
     readout_.setColour (juce::Label::textColourId, juce::Colour (0xff93c5e8));
     readout_.setJustificationType (juce::Justification::topLeft);
     content_.addAndMakeVisible (readout_);
@@ -177,9 +178,9 @@ void InspectorPanel::addSection (const juce::String& title)
 {
     auto row = std::make_unique<Row>();
     row->section = true;
-    row->key = {};
+    row->key = juce::String {};
     row->caption.setText (title, juce::dontSendNotification);
-    row->caption.setFont (juce::Font (juce::FontOptions (11.5f, juce::Font::bold)));
+    row->caption.setFont (fonts::bold (11.5f));
     row->caption.setColour (juce::Label::textColourId, juce::Colour (0xff5ee7ff));
     row->caption.setJustificationType (juce::Justification::centredLeft);
     content_.addAndMakeVisible (row->caption);
@@ -192,13 +193,13 @@ juce::TextEditor& InspectorPanel::addTextRow (const juce::String& caption, const
     row->key = key;
 
     row->caption.setText (caption, juce::dontSendNotification);
-    row->caption.setFont (juce::Font (juce::FontOptions (12.0f)));
+    row->caption.setFont (fonts::normal (12.0f));
     row->caption.setColour (juce::Label::textColourId, juce::Colour (0xff8b98a8));
     row->caption.setJustificationType (juce::Justification::centredRight);
     content_.addAndMakeVisible (row->caption);
 
     auto editor = std::make_unique<juce::TextEditor>();
-    editor->setFont (juce::Font (juce::FontOptions (12.0f)));
+    editor->setFont (fonts::normal (12.0f));
     editor->setColour (juce::TextEditor::backgroundColourId, juce::Colour (0xff141a24));
     editor->setColour (juce::TextEditor::textColourId, juce::Colour (0xffe6edf6));
     editor->setColour (juce::TextEditor::outlineColourId, juce::Colour (0xff283244));
@@ -226,7 +227,7 @@ juce::ComboBox& InspectorPanel::addComboRow (const juce::String& caption,
     row->key = key;
 
     row->caption.setText (caption, juce::dontSendNotification);
-    row->caption.setFont (juce::Font (juce::FontOptions (12.0f)));
+    row->caption.setFont (fonts::normal (12.0f));
     row->caption.setColour (juce::Label::textColourId, juce::Colour (0xff8b98a8));
     row->caption.setJustificationType (juce::Justification::centredRight);
     content_.addAndMakeVisible (row->caption);

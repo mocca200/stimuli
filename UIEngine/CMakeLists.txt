@@ -1,4 +1,15 @@
+# Nunito Bold and Black are embedded so the plugin, standalone app, Designer,
+# and render tools all resolve the project faces without a system install.
+juce_add_binary_data(MvtFontData
+    NAMESPACE MvtFontData
+    HEADER_NAME MvtFontData.h
+    SOURCES
+        "${PROJECT_SOURCE_DIR}/Assets/fonts/NunitoBold.ttf"
+        "${PROJECT_SOURCE_DIR}/Assets/fonts/NunitoBlack.ttf"
+)
+
 add_library(mvt_ui STATIC
+    Fonts.cpp
     Palette.cpp
     Skin.cpp
     RenderEngine.cpp
@@ -14,6 +25,7 @@ target_link_libraries(mvt_ui
         mvt_theme
         mvt_dsp
     PRIVATE
+        MvtFontData
         juce::juce_gui_basics
         juce::juce_graphics
 )

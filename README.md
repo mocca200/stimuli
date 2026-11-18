@@ -26,7 +26,7 @@ Milestone M0–M4 in progress:
 - [ ] GPU particle rendering via OpenGL
 - [ ] Explicit Direct2D/OpenGL backend selection
 - [ ] MP4 export
-- [ ] Constant-Q transform (analysis is STFT/FFT only, not yet implemented)
+- [x] Constant-Q transform: 84 log-spaced bands feeding a CQT-derived chroma
 
 ## Build
 
@@ -181,6 +181,15 @@ required for closed-source distribution.
 
 ## Design decisions
 
+- The CQT runs on its own 8192-point frame at a quarter of the STFT hop rate. A
+  2048-point frame resolves ~23 Hz, which is wider than a semitone below 250 Hz
+  and folds low notes onto the wrong pitch class; at 8192 points every tone from
+  C2 to A7 folds correctly (asserted in `Tests/CqtTests.cpp`). Bands narrower
+  than the bin spacing interpolate instead of reporting zero. Measured cost is
+  0.29% of one core, and `AnalysisSnapshot` carries both `cqt` and `chromaCqt`.
+- Nunito is the only UI family. Normal copy is set in the Nunito Bold face and
+  emphasised copy in Nunito Black; both faces are embedded via BinaryData and
+  resolve identically in the plugin, standalone app, Designer, and render tools.
 - JSON is the canonical schema; YAML is deferred. `LayoutWriter` is the exact
   inverse of `LayoutParser`, and a parse of a written document reproduces the
   same canonical output.

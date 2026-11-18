@@ -22,10 +22,10 @@
     "radius.md": "10px",
     "radius.lg": "16px",
 
-    "type.display": { "family": "Inter", "size": "28px", "weight": 700, "lineHeight": 34 },
-    "type.title": { "family": "Inter", "size": "18px", "weight": 600, "lineHeight": 24 },
-    "type.body": { "family": "Inter", "size": "14px", "weight": 400, "lineHeight": 20 },
-    "type.mono": { "family": "JetBrains Mono", "size": "12px", "weight": 400, "lineHeight": 16 },
+    "type.display": { "family": "Nunito", "size": "28px", "weight": 900, "lineHeight": 34 },
+    "type.title": { "family": "Nunito", "size": "18px", "weight": 900, "lineHeight": 24 },
+    "type.body": { "family": "Nunito", "size": "14px", "weight": 700, "lineHeight": 20 },
+    "type.mono": { "family": "Nunito", "size": "12px", "weight": 700, "lineHeight": 16 },
 
     "shadow.panel": { "x": 0, "y": 6, "blur": 18, "color": "#00000066" }
   },

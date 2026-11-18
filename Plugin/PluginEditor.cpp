@@ -7,6 +7,8 @@ PluginEditor::PluginEditor (AudioProcessor& processorIn)
     : juce::AudioProcessorEditor (processorIn)
     , processor (processorIn)
 {
+    setLookAndFeel (&nunitoLookAndFeel);
+
     setOpaque (true);
     setResizable (true, true);
     setResizeLimits (720, 420, 3840, 2160);
@@ -19,6 +21,11 @@ PluginEditor::PluginEditor (AudioProcessor& processorIn)
     renderEngine.setSkin (&skin);
     setSize (1120, 680);
     startTimerHz (60);
+}
+
+PluginEditor::~PluginEditor()
+{
+    setLookAndFeel (nullptr);
 }
 
 void PluginEditor::paint (juce::Graphics& graphics)

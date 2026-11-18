@@ -1,6 +1,7 @@
 #include "Designer/HierarchyPanel.h"
 
 #include "UIEngine/DesignerDocument.h"
+#include "UIEngine/Fonts.h"
 
 #include <utility>
 
@@ -40,7 +41,7 @@ public:
             graphics.fillRect (0, 0, width, height);
         }
 
-        graphics.setFont (juce::Font (juce::FontOptions (12.5f)));
+        graphics.setFont (fonts::normal (12.5f));
         graphics.setColour (node->type == "container" ? juce::Colour (0xffd9e2ec)
                                                       : juce::Colour (0xff93c5e8));
         graphics.drawText (juce::String (node->id) + "  (" + juce::String (node->type) + ")",
@@ -132,7 +133,7 @@ HierarchyPanel::HierarchyPanel()
     addAndMakeVisible (tree_);
 
     header_.setText ("Hierarchy", juce::dontSendNotification);
-    header_.setFont (juce::Font (juce::FontOptions (13.0f, juce::Font::bold)));
+    header_.setFont (fonts::bold (13.0f));
     header_.setColour (juce::Label::textColourId, juce::Colour (0xffd9e2ec));
     addAndMakeVisible (header_);
 

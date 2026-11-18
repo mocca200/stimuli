@@ -1,5 +1,7 @@
 #include "UIEngine/Palette.h"
 
+#include "UIEngine/Fonts.h"
+
 #include <algorithm>
 
 namespace mvt::ui
@@ -27,22 +29,20 @@ juce::Font fontForToken (const theme::ThemeRegistry& registry,
                          float fallbackHeight,
                          bool boldFallback)
 {
+    // Family tokens are advisory: every face in the suite is Nunito, so a theme
+    // can choose sizes and emphasis but not a different typeface.
     if (const auto value = registry.resolve (token))
     {
         if (const auto* typography = std::get_if<theme::Typography> (&*value))
         {
-            const auto style = typography->weight >= 600 ? juce::Font::bold
-                                                         : juce::Font::plain;
-            const auto name = juce::String (typography->family);
-            return juce::Font (juce::FontOptions (name,
-                                                  std::max (1.0f, typography->sizePx),
-                                                  style));
+            const auto height = typography->sizePx > 0.0f ? typography->sizePx
+                                                          : fallbackHeight;
+            return fonts::forWeight (typography->weight, height);
         }
     }
 
-    return juce::Font (juce::FontOptions (fallbackHeight,
-                                          boldFallback ? juce::Font::bold
-                                                       : juce::Font::plain));
+    return boldFallback ? fonts::bold (fallbackHeight)
+                        : fonts::normal (fallbackHeight);
 }
 
 Palette makePalette (const theme::ThemeRegistry& registry)

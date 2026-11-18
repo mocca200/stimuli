@@ -3,6 +3,7 @@
 #include "Designer/HotReload.h"
 #include "Designer/InspectorPanel.h"
 #include "UIEngine/DesignerDocument.h"
+#include "UIEngine/Fonts.h"
 #include "UIEngine/RenderEngine.h"
 #include "UIEngine/Skin.h"
 
@@ -20,7 +21,7 @@ class DesignerContent final : public juce::Component,
 {
 public:
     DesignerContent();
-    ~DesignerContent() override = default;
+    ~DesignerContent() override;
 
     void paint (juce::Graphics& graphics) override;
     void resized() override;
@@ -39,6 +40,7 @@ private:
     void refreshAll();
     void refreshStatus();
 
+    ui::NunitoLookAndFeel nunitoLookAndFeel;
     ui::Skin skin;
     ui::RenderEngine engine;
     ui::DesignerDocument document;
@@ -67,6 +69,7 @@ private:
 
 DesignerContent::DesignerContent()
 {
+    setLookAndFeel (&nunitoLookAndFeel);
     setOpaque (true);
 
     engine.setSkin (&skin);
@@ -134,15 +137,15 @@ DesignerContent::DesignerContent()
     addAndMakeVisible (viewportBox);
 
     titleLabel.setText ("MVT Designer", juce::dontSendNotification);
-    titleLabel.setFont (juce::Font (juce::FontOptions (14.0f, juce::Font::bold)));
+    titleLabel.setFont (ui::fonts::bold (14.0f));
     titleLabel.setColour (juce::Label::textColourId, juce::Colour (0xffd9e2ec));
     addAndMakeVisible (titleLabel);
 
-    statusLabel.setFont (juce::Font (juce::FontOptions (12.0f)));
+    statusLabel.setFont (ui::fonts::normal (12.0f));
     statusLabel.setColour (juce::Label::textColourId, juce::Colour (0xffaeb7c2));
     addAndMakeVisible (statusLabel);
 
-    safetyLabel.setFont (juce::Font (juce::FontOptions (11.5f)));
+    safetyLabel.setFont (ui::fonts::normal (11.5f));
     safetyLabel.setColour (juce::Label::textColourId, juce::Colour (0xff7f8b99));
     safetyLabel.setJustificationType (juce::Justification::centredRight);
     addAndMakeVisible (safetyLabel);
@@ -154,6 +157,11 @@ DesignerContent::DesignerContent()
     loadInitial();
     startTimerHz (4);
     setSize (1280, 800);
+}
+
+DesignerContent::~DesignerContent()
+{
+    setLookAndFeel (nullptr);
 }
 
 void DesignerContent::configureButton (juce::TextButton& button, const juce::String& text)
