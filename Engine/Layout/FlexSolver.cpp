@@ -12,16 +12,6 @@ namespace
 constexpr int kMaxDepth = 64;
 constexpr float kInfinity = std::numeric_limits<float>::max();
 
-float mainOf (Size size, Direction direction) noexcept
-{
-    return direction == Direction::row ? size.width : size.height;
-}
-
-float crossOf (Size size, Direction direction) noexcept
-{
-    return direction == Direction::row ? size.height : size.width;
-}
-
 struct IntrinsicSize
 {
     float width = 0.0f;

@@ -137,7 +137,7 @@ bool Skin::loadFallback (juce::String* error)
         return false;
 
     name_ = "Fallback";
-    folder_ = {};
+    folder_ = juce::File {};
     return true;
 }
 

@@ -20,7 +20,7 @@ void HotReload::watch (const juce::File& folder)
 void HotReload::stop()
 {
     stopTimer();
-    folder_ = {};
+    folder_ = juce::File {};
     primed_ = false;
 }
 
