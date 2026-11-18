@@ -97,6 +97,23 @@ public:
                                                    * (0.82f + 0.18f * pulse));
         }
 
+        // Stand-in for the real transform: energy on the chord's pitch classes,
+        // rolling off with octave so the strip has a top and a bottom.
+        for (std::size_t band = 0; band < dsp::kCqtBandCount; ++band)
+        {
+            const auto octave = static_cast<float> (band)
+                              / static_cast<float> (dsp::kCqtBinsPerOctave);
+            const auto pitchClass = band % static_cast<std::size_t> (dsp::kCqtBinsPerOctave);
+            const auto rolloff = 0.95f - 0.09f * octave;
+
+            snapshot.cqt[band] = juce::jlimit (0.0f, 1.0f,
+                                               snapshot.chroma[pitchClass]
+                                                   * rolloff * (0.85f + 0.15f * pulse));
+        }
+
+        for (std::size_t i = 0; i < dsp::kChromaCount; ++i)
+            snapshot.chromaCqt[i] = snapshot.chroma[i];
+
         snapshot.peakLeft = 0.68f + 0.08f * pulse;
         snapshot.peakRight = 0.64f + 0.07f * pulse;
         snapshot.rmsLeft = 0.34f + 0.04f * pulse;

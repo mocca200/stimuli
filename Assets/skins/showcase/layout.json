@@ -25,6 +25,7 @@
         "style": { "direction": "row", "flex": 1, "minHeight": 180, "gap": "$space.md" },
         "children": [
           { "id": "spectrogram", "type": "spectrogram", "style": { "flex": 2 } },
+          { "id": "cqt", "type": "cqt", "style": { "flex": 1 } },
           { "id": "chroma", "type": "chromawheel", "style": { "flex": 1 } }
         ]
       },

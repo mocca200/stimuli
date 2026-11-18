@@ -2,6 +2,7 @@
 
 #include "UIEngine/Skin.h"
 #include "UIEngine/Views/ChromaWheelView.h"
+#include "UIEngine/Views/CqtView.h"
 #include "UIEngine/Views/HpssView.h"
 #include "UIEngine/Views/ParticleFieldView.h"
 #include "UIEngine/Views/RadialSpectrumView.h"
@@ -32,6 +33,7 @@ std::unique_ptr<VisualizerView> makeView (const std::string& type)
     if (type == "vectorscope")  return std::make_unique<VectorscopeView>();
     if (type == "chromawheel")  return std::make_unique<ChromaWheelView>();
     if (type == "hpss")         return std::make_unique<HpssView>();
+    if (type == "cqt")          return std::make_unique<CqtView>();
     if (type == "radialspectrum") return std::make_unique<RadialSpectrumView>();
     if (type == "tonnetz")      return std::make_unique<TonnetzView>();
     if (type == "selfsimilarity") return std::make_unique<SelfSimilarityView>();

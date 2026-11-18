@@ -85,6 +85,7 @@ Visualizer nodes use these `type` values in `layout.json`:
 | `vectorscope` | Stereo goniometer |
 | `chromawheel` | Twelve-bin chroma wheel |
 | `hpss` | Harmonic/percussive dual layer |
+| `cqt` | Constant-Q note strip, C2-B8 |
 | `radialspectrum` | Spectrum wrapped around a circle |
 | `tonnetz` | Pitch-class lattice |
 | `selfsimilarity` | 64-frame chroma similarity matrix |
