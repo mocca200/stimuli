@@ -8,6 +8,7 @@ add_executable(mvt_tests
     LayoutTests.cpp
     ThemeTests.cpp
     DspTests.cpp
+    CqtTests.cpp
     SafetyTests.cpp
     LayoutWriterTests.cpp
     DesignerTests.cpp

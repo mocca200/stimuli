@@ -1,4 +1,5 @@
 add_library(mvt_dsp STATIC
+    Cqt.cpp
     Fft.cpp
     Hpss.cpp
     DspPipeline.cpp

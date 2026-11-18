@@ -49,7 +49,7 @@ Fft::Fft (int order)
     }
 }
 
-void Fft::processReal (const float* input, float* magnitudeOutput) noexcept
+void Fft::transform (const float* input) noexcept
 {
     const auto size = static_cast<std::size_t> (size_);
 
@@ -86,9 +86,25 @@ void Fft::processReal (const float* input, float* magnitudeOutput) noexcept
             }
         }
     }
+}
+
+void Fft::processReal (const float* input, float* magnitudeOutput) noexcept
+{
+    transform (input);
+
+    const auto size = static_cast<std::size_t> (size_);
 
     for (std::size_t i = 0; i < size; ++i)
         magnitudeOutput[i] = std::sqrt (real_[i] * real_[i] + imaginary_[i] * imaginary_[i]);
+}
+
+void Fft::processRealComplex (const float* input, float* realOutput,
+                              float* imaginaryOutput) noexcept
+{
+    transform (input);
+
+    std::copy (real_.begin(), real_.end(), realOutput);
+    std::copy (imaginary_.begin(), imaginary_.end(), imaginaryOutput);
 }
 
 } // namespace mvt::dsp

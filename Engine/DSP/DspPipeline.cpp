@@ -2,6 +2,7 @@
 
 #include "Engine/Core/SpscRingBuffer.h"
 #include "Engine/Core/TripleBuffer.h"
+#include "Engine/DSP/Cqt.h"
 #include "Engine/DSP/Fft.h"
 #include "Engine/DSP/Hpss.h"
 
@@ -24,6 +25,15 @@ constexpr std::size_t kFftSize = std::size_t { 1 } << kFftOrder;
 constexpr std::size_t kBinCount = kFftSize / 2 + 1;
 constexpr std::size_t kHopSize = 512;
 constexpr std::size_t kChunkFrames = 8192;
+
+// The CQT runs on its own longer frame: a 2048-point frame resolves only ~23 Hz,
+// which is more than a semitone at 130 Hz and folds low notes onto the wrong
+// pitch class. 8192 points is 5.9 Hz at 48 kHz and gets every tone from C2 up
+// onto the right class. It updates every fourth hop because a 170 ms window
+// barely changes in 10 ms, which keeps the worker inside its 3% budget.
+constexpr int kCqtFftOrder = 13;
+constexpr std::size_t kCqtFftSize = std::size_t { 1 } << kCqtFftOrder;
+constexpr std::size_t kCqtUpdateHops = 4;
 constexpr std::size_t kScopeHistory = kScopePointCount;
 
 float clamp01 (float value) noexcept
@@ -48,6 +58,8 @@ struct DspPipeline::Impl
               static_cast<std::size_t> (std::ceil (sampleRateIn * 2.0)) * 2))
         , fft (kFftOrder)
         , hpss (kBinCount, 17)
+        , cqt (static_cast<int> (kCqtFftSize), sampleRateIn)
+        , cqtFft (kCqtFftOrder)
         , window (kFftSize, 0.0f)
         , fftInput (kFftSize, 0.0f)
         , magnitudes (kFftSize, 0.0f)
@@ -60,6 +72,19 @@ struct DspPipeline::Impl
     {
         pushBuffer.resize (static_cast<std::size_t> (maxBlockFrames) * 2);
         chunkBuffer.resize (kChunkFrames * 2);
+        fftReal.resize (kFftSize, 0.0f);
+        fftImaginary.resize (kFftSize, 0.0f);
+        cqtMagnitudes.resize (kCqtBandCount, 0.0f);
+        cqtHistory.resize (kCqtFftSize, 0.0f);
+        cqtWindow.resize (kCqtFftSize, 0.0f);
+        cqtInput.resize (kCqtFftSize, 0.0f);
+        cqtReal.resize (kCqtFftSize, 0.0f);
+        cqtImaginary.resize (kCqtFftSize, 0.0f);
+
+        for (std::size_t i = 0; i < kCqtFftSize; ++i)
+            cqtWindow[i] = 0.5f - 0.5f * std::cos (6.28318530717958647692f
+                                                   * static_cast<float> (i)
+                                                   / static_cast<float> (kCqtFftSize));
 
         constexpr auto twoPi = 6.28318530717958647692f;
         auto windowSum = 0.0f;
@@ -145,6 +170,9 @@ struct DspPipeline::Impl
         historyMono[historyPosition] = (left + right) * 0.5f;
         historyPosition = (historyPosition + 1) % kFftSize;
 
+        cqtHistory[cqtHistoryPosition] = (left + right) * 0.5f;
+        cqtHistoryPosition = (cqtHistoryPosition + 1) % kCqtFftSize;
+
         ++samplesSeen;
         ++hopCounter;
 
@@ -171,10 +199,15 @@ struct DspPipeline::Impl
             fftInput[i] = historyMono[index] * window[i];
         }
 
-        fft.processReal (fftInput.data(), magnitudes.data());
+        // One transform feeds both the STFT magnitudes and the CQT filterbank.
+        fft.processRealComplex (fftInput.data(), fftReal.data(), fftImaginary.data());
 
         for (std::size_t bin = 0; bin < kBinCount; ++bin)
+        {
+            magnitudes[bin] = std::sqrt (fftReal[bin] * fftReal[bin]
+                                         + fftImaginary[bin] * fftImaginary[bin]);
             magnitudes[bin] *= windowScale;
+        }
 
         hpss.process (magnitudes.data(), harmonic.data(), percussive.data());
 
@@ -190,6 +223,7 @@ struct DspPipeline::Impl
 
         fillSpectrum (frame);
         fillChroma (frame);
+        updateCqt (frame);
         fillEnergy (frame);
         fillTimeDomain (frame);
 
@@ -273,6 +307,43 @@ struct DspPipeline::Impl
             for (std::size_t i = 0; i < kChromaCount; ++i)
                 frame.chroma[i] = clamp01 (accumulation[i] / peak);
         }
+    }
+
+    void updateCqt (AnalysisSnapshot& frame) noexcept
+    {
+        if (++cqtHopCounter >= kCqtUpdateHops)
+        {
+            cqtHopCounter = 0;
+
+            if (samplesSeen >= kCqtFftSize)
+            {
+                for (std::size_t i = 0; i < kCqtFftSize; ++i)
+                {
+                    const auto index = (cqtHistoryPosition + i) % kCqtFftSize;
+                    cqtInput[i] = cqtHistory[index] * cqtWindow[i];
+                }
+
+                cqtFft.processRealComplex (cqtInput.data(), cqtReal.data(),
+                                           cqtImaginary.data());
+                cqt.process (cqtReal.data(), cqtImaginary.data(), cqtMagnitudes.data());
+
+                auto peak = 0.0f;
+
+                for (const auto magnitude : cqtMagnitudes)
+                    peak = std::max (peak, magnitude);
+
+                if (peak > 1.0e-9f)
+                    for (std::size_t band = 0; band < kCqtBandCount; ++band)
+                        lastCqt[band] = clamp01 (cqtMagnitudes[band] / peak);
+
+                cqt.foldToChroma (cqtMagnitudes.data(), lastChromaCqt.data());
+            }
+        }
+
+        // Bands hold their last value between updates so a 23-frame-per-second
+        // CQT still yields a complete snapshot on every hop.
+        frame.cqt = lastCqt;
+        frame.chromaCqt = lastChromaCqt;
     }
 
     void fillEnergy (AnalysisSnapshot& frame) noexcept
@@ -411,10 +482,23 @@ struct DspPipeline::Impl
 
     Fft fft;
     Hpss hpss;
+    Cqt cqt;
+    Fft cqtFft;
 
     std::vector<float> window;
     std::vector<float> fftInput;
+    std::vector<float> fftReal;
+    std::vector<float> fftImaginary;
+    std::vector<float> cqtMagnitudes;
+    std::vector<float> cqtHistory;
+    std::vector<float> cqtWindow;
+    std::vector<float> cqtInput;
+    std::vector<float> cqtReal;
+    std::vector<float> cqtImaginary;
     std::vector<float> magnitudes;
+
+    std::array<float, kCqtBandCount> lastCqt {};
+    std::array<float, kChromaCount> lastChromaCqt {};
     std::vector<float> harmonic;
     std::vector<float> percussive;
     std::vector<float> previousMagnitudes;
@@ -424,6 +508,8 @@ struct DspPipeline::Impl
 
     float windowScale = 1.0f;
     std::size_t historyPosition = 0;
+    std::size_t cqtHistoryPosition = 0;
+    std::size_t cqtHopCounter = 0;
     std::size_t hopCounter = 0;
     std::uint64_t samplesSeen = 0;
     std::uint64_t sequence = 0;

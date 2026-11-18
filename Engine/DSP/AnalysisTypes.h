@@ -12,6 +12,15 @@ inline constexpr std::size_t kWaveformPointCount = 512;
 inline constexpr std::size_t kScopePointCount = 256;
 inline constexpr std::size_t kChromaCount = 12;
 
+inline constexpr int kCqtBinsPerOctave = 12;
+inline constexpr int kCqtOctaves = 7;
+inline constexpr std::size_t kCqtBandCount =
+    static_cast<std::size_t> (kCqtBinsPerOctave * kCqtOctaves);
+
+/** Lowest CQT band, C2. Chosen because 65.406 Hz sits on a semitone boundary,
+    so band 0 folds to pitch class C with no offset. */
+inline constexpr float kCqtMinFrequencyHz = 65.406f;
+
 /**
  * Immutable analysis frame published from the DSP worker to the UI.
 
@@ -42,6 +51,14 @@ struct AnalysisSnapshot
     std::array<float, kWaveformPointCount> waveform {};
     std::array<float, kScopePointCount * 2> scope {};
     std::array<float, kChromaCount> chroma {};
+
+    /** Constant-Q band magnitudes, normalised per frame to 0..1 by the loudest
+        band. Band k is centred on `kCqtMinFrequencyHz * 2^(k / 12)`. */
+    std::array<float, kCqtBandCount> cqt {};
+
+    /** Chroma folded from the CQT bands rather than from FFT bins, so pitch
+        classes stay octave-consistent across the whole range. */
+    std::array<float, kChromaCount> chromaCqt {};
 
     bool valid = false;
 };

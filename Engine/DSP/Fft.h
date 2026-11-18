@@ -27,7 +27,15 @@ public:
         `size()` magnitudes. Only bins [0, size()/2] contain unique data. */
     void processReal (const float* input, float* magnitudeOutput) noexcept;
 
+    /** Same transform as processReal(), but keeps the complex bins so a
+        constant-Q filterbank can combine them with phase coherence. Both
+        outputs receive size() entries; bins above Nyquist hold mirrored data. */
+    void processRealComplex (const float* input, float* realOutput,
+                             float* imaginaryOutput) noexcept;
+
 private:
+    void transform (const float* input) noexcept;
+
     int order_ = 11;
     int size_ = 2048;
     std::vector<float> cosTable_;
