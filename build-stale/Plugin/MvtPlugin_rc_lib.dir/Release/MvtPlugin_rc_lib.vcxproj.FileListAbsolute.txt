@@ -1,1 +1,0 @@
-C:\Users\mocca200\Documents\Default Project\build\Plugin\MvtPlugin_rc_lib.dir\Release\MvtPlugin_rc_lib.lib

@@ -1,5 +1,7 @@
 # Build output
 /build/
+# Covers stale tree directories such as build-stale/ from earlier MSVC trees
+/build-*/
 /out/
 /install/
 /.vs/
