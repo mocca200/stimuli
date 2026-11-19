@@ -50,6 +50,11 @@ public:
         On failure the existing theme is kept. */
     bool setThemeDocument (const juce::var& document, juce::String* error = nullptr);
 
+    /** Resolves a skin folder by name. `STIMULI_SKIN_DIR` overrides the default
+        skin only; any other name is looked up under Assets/skins. Returns an
+        invalid File when that skin is not installed. */
+    [[nodiscard]] static juce::File folderForName (const juce::String& skinName);
+
     [[nodiscard]] static juce::File defaultFolder();
 
 private:

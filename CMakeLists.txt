@@ -9,6 +9,13 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(MvtOptions)
 include(MvtHelpers)
 
+# Windows: link the C runtime statically so an installed copy runs on a clean
+# Windows 10/11 machine without the Visual C++ redistributable installed.
+# CMP0091 is NEW for our minimum CMake version, so the variable is honoured.
+if (MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD ${MVT_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

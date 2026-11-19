@@ -114,6 +114,27 @@ struct DspPipeline::Impl
         worker = std::jthread ([this] (std::stop_token token) { run (token); });
     }
 
+    void setGainDecibels (float decibels) noexcept
+    {
+        const auto clamped = std::clamp (decibels, -48.0f, 24.0f);
+        gainLinear.store (std::pow (10.0f, clamped / 20.0f), std::memory_order_relaxed);
+    }
+
+    void setSmoothingMilliseconds (float milliseconds) noexcept
+    {
+        const auto clamped = std::clamp (milliseconds, 0.0f, 1000.0f);
+        const auto hopSeconds = static_cast<double> (kHopSize) / sampleRate;
+        const auto timeConstantSeconds = static_cast<double> (clamped) * 0.001;
+
+        // One-pole coefficient for a per-hop step: alpha = 1 - exp(-dt / tau).
+        // A zero time constant yields alpha == 1, which publishes frames as-is.
+        const auto alpha = timeConstantSeconds > 0.0
+                             ? 1.0 - std::exp (-hopSeconds / timeConstantSeconds)
+                             : 1.0;
+
+        smoothingAlpha.store (static_cast<float> (alpha), std::memory_order_relaxed);
+    }
+
     void push (const float* left, const float* right, int numSamples) noexcept
     {
         auto offset = 0;
@@ -202,11 +223,13 @@ struct DspPipeline::Impl
         // One transform feeds both the STFT magnitudes and the CQT filterbank.
         fft.processRealComplex (fftInput.data(), fftReal.data(), fftImaginary.data());
 
+        const auto gain = gainLinear.load (std::memory_order_relaxed);
+
         for (std::size_t bin = 0; bin < kBinCount; ++bin)
         {
             magnitudes[bin] = std::sqrt (fftReal[bin] * fftReal[bin]
                                          + fftImaginary[bin] * fftImaginary[bin]);
-            magnitudes[bin] *= windowScale;
+            magnitudes[bin] *= windowScale * gain;
         }
 
         hpss.process (magnitudes.data(), harmonic.data(), percussive.data());
@@ -226,11 +249,50 @@ struct DspPipeline::Impl
         updateCqt (frame);
         fillEnergy (frame);
         fillTimeDomain (frame);
+        smoothPublishedViews (frame);
 
         frame.valid = true;
         snapshot.write (frame);
 
         resetHopStatistics();
+    }
+
+    /** Applies the one-pole smoother to every spectral view. The smoothers keep
+        their own state so switching the parameter mid-stream ramps from what is
+        currently on screen instead of jumping. */
+    void smoothPublishedViews (AnalysisSnapshot& frame) noexcept
+    {
+        const auto alpha = smoothingAlpha.load (std::memory_order_relaxed);
+
+        if (alpha >= 0.999f)
+        {
+            // Smoothing off: publish raw frames, and keep the smoother state in
+            // step so enabling it later starts from the visible values.
+            smoothedSpectrum = frame.spectrum;
+            smoothedHarmonic = frame.harmonicSpectrum;
+            smoothedPercussive = frame.percussiveSpectrum;
+            smoothedCqt = frame.cqt;
+            smoothedChroma = frame.chroma;
+            smoothedChromaCqt = frame.chromaCqt;
+            return;
+        }
+
+        smoothArray (frame.spectrum, smoothedSpectrum, alpha);
+        smoothArray (frame.harmonicSpectrum, smoothedHarmonic, alpha);
+        smoothArray (frame.percussiveSpectrum, smoothedPercussive, alpha);
+        smoothArray (frame.cqt, smoothedCqt, alpha);
+        smoothArray (frame.chroma, smoothedChroma, alpha);
+        smoothArray (frame.chromaCqt, smoothedChromaCqt, alpha);
+    }
+
+    template <typename ArrayType>
+    static void smoothArray (ArrayType& published, ArrayType& state, float alpha) noexcept
+    {
+        for (std::size_t i = 0; i < published.size(); ++i)
+        {
+            state[i] += alpha * (published[i] - state[i]);
+            published[i] = state[i];
+        }
     }
 
     void resetHopStatistics() noexcept
@@ -479,6 +541,8 @@ struct DspPipeline::Impl
     std::vector<float> pushBuffer;
     std::vector<float> chunkBuffer;
     std::atomic<std::uint32_t> dropped { 0 };
+    std::atomic<float> gainLinear { 1.0f };
+    std::atomic<float> smoothingAlpha { 1.0f };
 
     Fft fft;
     Hpss hpss;
@@ -499,6 +563,13 @@ struct DspPipeline::Impl
 
     std::array<float, kCqtBandCount> lastCqt {};
     std::array<float, kChromaCount> lastChromaCqt {};
+
+    std::array<float, kSpectrumBandCount> smoothedSpectrum {};
+    std::array<float, kSpectrumBandCount> smoothedHarmonic {};
+    std::array<float, kSpectrumBandCount> smoothedPercussive {};
+    std::array<float, kCqtBandCount> smoothedCqt {};
+    std::array<float, kChromaCount> smoothedChroma {};
+    std::array<float, kChromaCount> smoothedChromaCqt {};
     std::vector<float> harmonic;
     std::vector<float> percussive;
     std::vector<float> previousMagnitudes;
@@ -538,6 +609,8 @@ void DspPipeline::prepare (double sampleRate, int maxBlockSize)
         return;
 
     impl_ = std::make_unique<Impl> (sampleRate, maxBlockSize);
+    impl_->setGainDecibels (analysisGainDecibels_.load (std::memory_order_relaxed));
+    impl_->setSmoothingMilliseconds (smoothingMilliseconds_.load (std::memory_order_relaxed));
     impl_->start();
 }
 
@@ -560,6 +633,22 @@ bool DspPipeline::readSnapshot (AnalysisSnapshot& destination) noexcept
         return false;
 
     return impl_->snapshot.tryRead (destination);
+}
+
+void DspPipeline::setAnalysisGainDecibels (float decibels) noexcept
+{
+    analysisGainDecibels_.store (decibels, std::memory_order_relaxed);
+
+    if (impl_ != nullptr)
+        impl_->setGainDecibels (decibels);
+}
+
+void DspPipeline::setSmoothingMilliseconds (float milliseconds) noexcept
+{
+    smoothingMilliseconds_.store (milliseconds, std::memory_order_relaxed);
+
+    if (impl_ != nullptr)
+        impl_->setSmoothingMilliseconds (milliseconds);
 }
 
 double DspPipeline::sampleRate() const noexcept

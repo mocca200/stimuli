@@ -15,7 +15,7 @@
         "type": "container",
         "style": { "direction": "row", "height": 56, "alignItems": "center", "gap": "$space.md" },
         "children": [
-          { "id": "title", "type": "label", "style": { "flex": 1, "height": 32 }, "text": "MVT Visualizer" },
+          { "id": "title", "type": "label", "style": { "flex": 1, "height": 32 }, "text": "Stimuli" },
           { "id": "quality", "type": "label", "style": { "width": 120, "height": 28 }, "text": "Standard" }
         ]
       },

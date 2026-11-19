@@ -1,0 +1,47 @@
+Stimuli - Licence summary
+=========================
+
+This installer contains two separately licensed parts. Both licence texts are
+installed with the program, in the "licenses" folder next to the executables.
+
+1. Stimuli (plugin, standalone application and Designer)
+--------------------------------------------------------
+Copyright (C) 2026 Stimuli and contributors.
+
+Stimuli is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+Stimuli is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+details.
+
+The full text is installed as:
+    licenses\LICENSE-AGPL-3.0.txt
+
+Because this program is licensed under the AGPL, anyone who interacts with it
+over a network is entitled to the corresponding source code of that version.
+The source is published at: https://github.com/mocca200/stimuli
+
+2. Nunito typefaces
+-------------------
+The plugin and Designer embed the Nunito typeface, Copyright (C) 2011 by
+Vernon Adams and contributors, licensed under the SIL Open Font License,
+Version 1.1. The font files may be used, studied, modified and redistributed
+with software, but may not be sold on their own, and any derivative that keeps
+the reserved font name must comply with the OFL.
+
+The full text is installed as:
+    licenses\OFL-1.1-Nunito.txt
+
+3. Other third-party components
+-------------------------------
+Stimuli links JUCE (https://juce.com), used under the AGPLv3, and
+Catch2 for its test build (BSL-1.0, not shipped). See:
+    licenses\THIRD_PARTY_NOTICES.md
+
+By continuing, you accept the terms of the GNU Affero General Public License
+version 3 for Stimuli and of the SIL Open Font License 1.1 for the
+embedded Nunito typefaces.

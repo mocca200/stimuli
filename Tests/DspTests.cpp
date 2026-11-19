@@ -188,6 +188,102 @@ TEST_CASE ("DspPipeline reports silence without stale data", "[dsp][pipeline]")
         REQUIRE (value == 0.0f);
 }
 
+TEST_CASE ("Analysis gain scales the published spectrum", "[dsp][pipeline][gain]")
+{
+    constexpr int blockSize = 512;
+    constexpr auto twoPi = std::numbers::pi_v<float> * 2.0f;
+
+    // Feeds at roughly real time so the capture ring cannot overflow, then
+    // waits until the worker has nothing left to publish. Without the pacing a
+    // burst of blocks outruns the worker and the comparison below would read
+    // frames captured before the parameter change.
+    auto settle = [&] (DspPipeline& pipeline)
+    {
+        AnalysisSnapshot snapshot;
+        AnalysisSnapshot last;
+        auto haveFrame = false;
+        auto idlePolls = 0;
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds (5);
+
+        while (idlePolls < 3 && std::chrono::steady_clock::now() < deadline)
+        {
+            if (pipeline.readSnapshot (snapshot) && snapshot.valid)
+            {
+                last = snapshot;
+                haveFrame = true;
+                idlePolls = 0;
+            }
+            else
+            {
+                ++idlePolls;
+            }
+
+            std::this_thread::sleep_for (std::chrono::milliseconds (20));
+        }
+
+        return haveFrame ? last : AnalysisSnapshot {};
+    };
+
+    auto feedPaced = [&] (DspPipeline& pipeline, float& phase, int blocks)
+    {
+        std::vector<float> samples (blockSize);
+
+        for (int block = 0; block < blocks; ++block)
+        {
+            for (int i = 0; i < blockSize; ++i)
+            {
+                samples[static_cast<std::size_t> (i)] = 0.5f * std::sin (phase);
+                phase += twoPi * 440.0f / 48000.0f;
+
+                if (phase > twoPi)
+                    phase -= twoPi;
+            }
+
+            pipeline.pushAudio (samples.data(), samples.data(), blockSize);
+            std::this_thread::sleep_for (std::chrono::milliseconds (2));
+        }
+    };
+
+    DspPipeline pipeline;
+    pipeline.prepare (48000.0, 512);
+    REQUIRE (pipeline.isRunning());
+
+    auto phase = 0.0f;
+    feedPaced (pipeline, phase, 100);
+    const auto unity = settle (pipeline);
+    REQUIRE (unity.valid);
+    REQUIRE (unity.spectrum[argMax (unity.spectrum)] > 0.2f);
+
+    // 12 dB down must move the published band peak measurably: a 0.5 amplitude
+    // sine sits around -6 dBFS, well above the -100 dBFS floor, so neither end
+    // of the comparison clips.
+    pipeline.setAnalysisGainDecibels (-12.0f);
+    feedPaced (pipeline, phase, 40);
+    const auto attenuated = settle (pipeline);
+    REQUIRE (attenuated.valid);
+    REQUIRE (attenuated.sequence > unity.sequence);
+    REQUIRE (attenuated.spectrum[argMax (attenuated.spectrum)]
+             < unity.spectrum[argMax (unity.spectrum)] - 0.05f);
+
+    // Smoothing must remain a bounded, opt-in filter: turning it on never
+    // produces values outside the normalised range.
+    pipeline.setAnalysisGainDecibels (0.0f);
+    pipeline.setSmoothingMilliseconds (120.0f);
+    feedPaced (pipeline, phase, 40);
+    const auto smoothed = settle (pipeline);
+
+    REQUIRE (smoothed.valid);
+    REQUIRE (smoothed.sequence > attenuated.sequence);
+
+    for (const auto value : smoothed.spectrum)
+    {
+        REQUIRE (value >= 0.0f);
+        REQUIRE (value <= 1.0f);
+    }
+
+    pipeline.stop();
+}
+
 TEST_CASE ("Spectrum values map back to decibels", "[dsp]")
 {
     REQUIRE (spectrumValueToDecibels (0.0f) == Catch::Approx (-100.0f));

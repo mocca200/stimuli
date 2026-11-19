@@ -136,7 +136,7 @@ DesignerContent::DesignerContent()
     };
     addAndMakeVisible (viewportBox);
 
-    titleLabel.setText ("MVT Designer", juce::dontSendNotification);
+    titleLabel.setText ("Stimuli Designer", juce::dontSendNotification);
     titleLabel.setFont (ui::fonts::bold (14.0f));
     titleLabel.setColour (juce::Label::textColourId, juce::Colour (0xffd9e2ec));
     addAndMakeVisible (titleLabel);
@@ -468,7 +468,7 @@ private:
 class DesignerApplication final : public juce::JUCEApplication
 {
 public:
-    const juce::String getApplicationName() override { return "MVT Designer"; }
+    const juce::String getApplicationName() override { return "Stimuli Designer"; }
     const juce::String getApplicationVersion() override { return "0.1.0"; }
     bool moreThanOneInstanceAllowed() override { return true; }
 

@@ -46,3 +46,6 @@ Thumbs.db
 # Generated previews
 preview.png
 /*.png
+
+# Installer output
+/dist/

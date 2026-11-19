@@ -1,7 +1,7 @@
 juce_add_gui_app(MvtDesigner
-    COMPANY_NAME "MVT"
-    BUNDLE_ID "com.mvt.designer"
-    PRODUCT_NAME "MVT Designer"
+    COMPANY_NAME "Stimuli"
+    BUNDLE_ID "com.stimuli.designer"
+    PRODUCT_NAME "Stimuli Designer"
 )
 
 target_sources(MvtDesigner PRIVATE

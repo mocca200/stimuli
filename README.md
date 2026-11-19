@@ -1,4 +1,4 @@
-# MVT — Audio-Reactive Visualization Suite
+# Stimuli — Audio-Reactive Visualisation Suite
 
 A C++20 / JUCE 9 audio-reactive visualizer, VST3 plugin, standalone app, and
 engine-first UI designer.
@@ -27,6 +27,10 @@ Milestone M0–M4 in progress:
 - [ ] Explicit Direct2D/OpenGL backend selection
 - [ ] MP4 export
 - [x] Constant-Q transform: 84 log-spaced bands feeding a CQT-derived chroma
+- [x] Automatable parameters (input gain, smoothing, flash limit, skin) with
+      full state save/restore in the VST3
+- [x] Windows installer definition (Inno Setup) for the VST3, standalone,
+      Designer, assets, licence texts, and an uninstaller
 
 ## Build
 
@@ -50,14 +54,82 @@ or `MVT_CATCH2_SOURCE_DIR` to use local checkouts.
 
 Release artefacts (MSVC x64, no symbols):
 
-| Artefact | Size |
+| Artefact | Location |
 |---|---|
-| `MVT Visualizer.vst3` | 8.2 MB |
-| `MVT Visualizer.exe` (standalone) | 10.3 MB |
-| `MVT Designer.exe` | 7.2 MB |
+| `Stimuli.vst3` | `build\VST3\` |
+| `Stimuli.exe` (standalone) | `build\Plugin\MvtPlugin_artefacts\Release\Standalone\` |
+| `Stimuli Designer.exe` | `build\Designer\MvtDesigner_artefacts\Release\` |
 
 Ship the binaries with the `Assets/` folder beside them. PDBs, `.ilk` files,
 and static libraries are build intermediates and are not part of a package.
+
+On MSVC the C runtime is linked statically (`MultiThreaded`), so the installed
+build does not need the Visual C++ redistributable on the user's machine.
+`MvtPlugin` and `MvtDesigner` are the internal CMake target names; the product
+names, bundle identifiers and plugin codes are Stimuli's.
+
+## Parameters
+
+The plugin exposes four automatable parameters. All of them change only what is
+drawn; the audio path stays bit-transparent, so the analyser remains safe on a
+master bus.
+
+| Parameter | Range | Effect |
+|---|---|---|
+| `inputGain` | -24 … +12 dB | Visual sensitivity: scales the analysed STFT magnitudes before every feature is derived |
+| `smoothing` | 0 … 250 ms | One-pole time constant for the spectral views; 0 publishes raw frames. Waveform and vectorscope are never smoothed |
+| `flashLimit` | Standard / Strict | Flash budget for the photosensitivity gate. Standard allows 3 flashes/s (WCAG 2.3.1), Strict allows 1 flash/s. The gate keeps final authority in both cases; there is no off switch |
+| `skin` | Default / Showcase | Skin folder loaded at `Assets/skins/<name>` |
+
+The plugin editor shows a strip along the bottom with all four controls, so the
+standalone app is usable without a host automation panel. Host automation and
+the strip are bound to the same parameters, so they always agree.
+
+State is stored as one APVTS XML blob, so saving a preset or a session restores
+the skin, the flash budget, and the analysis settings with the project.
+`getStateInformation` ignores documents written by other plugins instead of
+resetting the session to defaults.
+
+## Installer
+
+The installer is an Inno Setup 6 script at `installer/stimuli.iss`. It needs a
+Release build and [Inno Setup](https://jrsoftware.org/isdl.php) on the build
+machine:
+
+```powershell
+cmake --build build --config Release --parallel
+iscc installer\stimuli.iss
+```
+
+That writes `dist\Stimuli-<version>-win64-setup.exe`, which installs:
+
+| Content | Destination |
+|---|---|
+| `Stimuli.vst3` | `C:\Program Files\Common Files\VST3\` |
+| `Stimuli.exe` (standalone) | `C:\Program Files\Stimuli\` |
+| `Stimuli Designer.exe`, `Assets/` | `C:\Program Files\Stimuli\` |
+| Shared `Assets/` copy for the VST3 | `C:\ProgramData\Stimuli\Assets\` |
+| AGPL, OFL, third-party notices | `C:\Program Files\Stimuli\licenses\` |
+
+It adds Start-menu entries for both applications, an optional desktop shortcut,
+and an uninstaller registered in Apps & features that also removes the VST3
+bundle from `Common Files` and the shared assets from `ProgramData`.
+
+The shared copy exists because a VST3 runs inside the host process: it cannot
+find assets next to its own bundle, so the plugin resolves skins from
+`C:\ProgramData\Stimuli\Assets\skins\`, falling back to the built-in
+documents when that folder is absent. `STIMULI_SKIN_DIR` still overrides the
+`default` skin for development. The wizard shows the AGPL/OFL terms in
+`installer/EULA.txt` and the SIL OFL 1.1 text for the embedded Nunito faces.
+
+Version and build path can be overridden per run:
+
+```powershell
+iscc /DAppVersion=0.2.0 /DBuildRoot=C:\src\stimuli\build installer\stimuli.iss
+```
+
+The script refuses to compile when no Release artefacts are found, so a Debug
+build cannot silently produce a broken installer.
 
 ## Tools
 
@@ -72,7 +144,7 @@ build\Tools\Debug\mvt_render_preview.exe --skin Assets/skins/showcase `
 ```
 
 Skins live in `Assets/skins/<name>/` and contain `manifest.json`, `layout.json`,
-`theme.json`, and optional assets. Set `MVT_SKIN_DIR` to load a different skin
+`theme.json`, and optional assets. Set `STIMULI_SKIN_DIR` to load a different skin
 folder in the plugin or designer.
 
 Visualizer nodes use these `type` values in `layout.json`:

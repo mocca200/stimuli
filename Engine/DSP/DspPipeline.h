@@ -2,6 +2,7 @@
 
 #include "Engine/DSP/AnalysisTypes.h"
 
+#include <atomic>
 #include <cstdint>
 #include <memory>
 
@@ -36,6 +37,18 @@ public:
     /** UI-thread entry point. Returns false when no newer frame is available. */
     [[nodiscard]] bool readSnapshot (AnalysisSnapshot& destination) noexcept;
 
+    /** Visual analysis gain in decibels, applied to the STFT magnitudes before
+        every feature is derived. Changes the sensitivity of the spectrogram,
+        the spectrum and the note strip without touching the audio path.
+        Safe to call from any thread, including while prepared. */
+    void setAnalysisGainDecibels (float decibels) noexcept;
+
+    /** Exponential smoothing time constant for the published spectral views in
+        milliseconds. 0 disables smoothing and publishes raw frames. Time-domain
+        views (waveform, vectorscope) are never smoothed. Safe to call from any
+        thread, including while prepared. */
+    void setSmoothingMilliseconds (float milliseconds) noexcept;
+
     [[nodiscard]] double sampleRate() const noexcept;
     [[nodiscard]] std::uint32_t droppedFrames() const noexcept;
     [[nodiscard]] bool isRunning() const noexcept;
@@ -43,6 +56,12 @@ public:
 private:
     struct Impl;
     std::unique_ptr<Impl> impl_;
+
+    // Kept outside Impl so a value set before prepare() or across a prepare()
+    // survives the worker being torn down and rebuilt. Atomic because setters
+    // are documented as callable from any thread, including while prepared.
+    std::atomic<float> analysisGainDecibels_ { 0.0f };
+    std::atomic<float> smoothingMilliseconds_ { 0.0f };
 };
 
 } // namespace mvt::dsp

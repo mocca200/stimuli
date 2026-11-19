@@ -38,7 +38,7 @@ constexpr auto kFallbackLayout = R"({
     "type": "container",
     "style": { "direction": "column", "padding": 20, "gap": 12 },
     "children": [
-      { "id": "title", "type": "label", "text": "MVT Visualizer",
+      { "id": "title", "type": "label", "text": "Stimuli",
         "style": { "height": 36 } },
       { "id": "spectrum", "type": "spectrum",
         "style": { "flex": 1, "minHeight": 180 } },
@@ -279,20 +279,28 @@ bool Skin::setThemeDocument (const juce::var& document, juce::String* error)
     return true;
 }
 
-juce::File Skin::defaultFolder()
+juce::File Skin::folderForName (const juce::String& skinName)
 {
-    const auto environment = juce::SystemStats::getEnvironmentVariable ("MVT_SKIN_DIR", {});
-    if (environment.isNotEmpty())
+    if (skinName.isEmpty())
+        return {};
+
+    // The environment variable means "run this folder instead of the default
+    // skin", so it must not hijack a deliberate Showcase request.
+    if (skinName == "default")
     {
-        const auto candidate = juce::File (environment);
-        if (candidate.isDirectory())
-            return candidate;
+        const auto environment = juce::SystemStats::getEnvironmentVariable ("STIMULI_SKIN_DIR", {});
+        if (environment.isNotEmpty())
+        {
+            const auto candidate = juce::File (environment);
+            if (candidate.isDirectory())
+                return candidate;
+        }
     }
 
    #ifdef MVT_DEV_ASSETS_DIR
     const auto development = juce::File (juce::String (MVT_DEV_ASSETS_DIR))
                                  .getChildFile ("skins")
-                                 .getChildFile ("default");
+                                 .getChildFile (skinName);
     if (development.isDirectory())
         return development;
    #endif
@@ -300,24 +308,41 @@ juce::File Skin::defaultFolder()
     const auto working = juce::File::getCurrentWorkingDirectory()
                              .getChildFile ("Assets")
                              .getChildFile ("skins")
-                             .getChildFile ("default");
+                             .getChildFile (skinName);
     if (working.isDirectory())
         return working;
 
     const auto executable = juce::File::getSpecialLocation (
         juce::File::currentExecutableFile).getParentDirectory();
 
-    const auto besideExecutable = executable.getChildFile ("skins").getChildFile ("default");
+    const auto besideExecutable = executable.getChildFile ("skins").getChildFile (skinName);
     if (besideExecutable.isDirectory())
         return besideExecutable;
 
     const auto executableAssets = executable.getChildFile ("Assets")
                                                .getChildFile ("skins")
-                                               .getChildFile ("default");
+                                               .getChildFile (skinName);
     if (executableAssets.isDirectory())
         return executableAssets;
 
+    // A VST3 does not own its process: currentExecutableFile is the host, so
+    // the searches above cannot see the plugin's own folder. The installer
+    // puts a shared copy of Assets here, which every user and host can read.
+    const auto sharedAssets = juce::File::getSpecialLocation (
+                                  juce::File::commonApplicationDataDirectory)
+                                  .getChildFile ("Stimuli")
+                                  .getChildFile ("Assets")
+                                  .getChildFile ("skins")
+                                  .getChildFile (skinName);
+    if (sharedAssets.isDirectory())
+        return sharedAssets;
+
     return {};
+}
+
+juce::File Skin::defaultFolder()
+{
+    return folderForName ("default");
 }
 
 } // namespace mvt::ui

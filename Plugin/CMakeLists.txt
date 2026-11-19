@@ -1,20 +1,23 @@
 juce_add_plugin(MvtPlugin
-    COMPANY_NAME "MVT"
-    BUNDLE_ID "com.mvt.visualizer"
+    COMPANY_NAME "Stimuli"
+    BUNDLE_ID "com.stimuli.plugin"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
     COPY_PLUGIN_AFTER_BUILD FALSE
-    PLUGIN_MANUFACTURER_CODE MvtX
-    PLUGIN_CODE Mvt1
-    PRODUCT_NAME "MVT Visualizer"
+    PLUGIN_MANUFACTURER_CODE Stml
+    PLUGIN_CODE Stm1
+    PRODUCT_NAME "Stimuli"
     VST3_CATEGORIES "Fx Analyzer"
     FORMATS VST3 Standalone
 )
 
 target_sources(MvtPlugin PRIVATE
+    ControlStrip.cpp
+    ControlStrip.h
+    PluginParameters.h
     PluginProcessor.cpp
     PluginProcessor.h
     PluginEditor.cpp

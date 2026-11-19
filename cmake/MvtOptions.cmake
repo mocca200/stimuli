@@ -9,5 +9,5 @@ option(MVT_WARNINGS_AS_ERRORS "Treat project warnings as errors" ON)
 set(MVT_CXX_STANDARD 20 CACHE STRING "C++ standard used by all project targets")
 
 # Audio / UI defaults. These are compile definitions, not user settings.
-set(MVT_COMPANY_NAME "MVT" CACHE STRING "")
-set(MVT_PRODUCT_NAME "MVT Visualizer" CACHE STRING "")
+set(MVT_COMPANY_NAME "Stimuli" CACHE STRING "")
+set(MVT_PRODUCT_NAME "Stimuli" CACHE STRING "")
